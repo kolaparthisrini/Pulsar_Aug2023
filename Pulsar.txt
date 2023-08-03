@@ -1,0 +1,497 @@
+Apache Pulsar--MQ 
+=================
+Day1-3-Aug-2023
+----------------
+>https://github.com/kolaparthisrini/Pulsar_Aug2023
+>MQ
+
+>Web server and App server
+Web Server:3 components
+===========
+Example: Tomcat,nginx,jetty....etc
+Note: apache is not a web server.http engine
+It is a combination of catalina,jasper,http engine and middleware services.
+catalina---this is a container for running servlets.
+Jasper---this is a container for running jsp.
+http engine--->responsible for understanding and processing http requests.
+middleware services----->Additional services provided by servers.min of 6 services and max will be below 11.
+Exg: tx management,lifecycle mgmt,connection pooling....etc
+
+APP Server:6 components
+===========
+Example: Glassfish,Weblogic,Jboss,Pramathi....etc
+
+catalina---this is a container for running servlets.
+Jasper---this is a container for running jsp.
+http engine--->responsible for understanding and processing http requests.
+EJB/enterprise java bean container---->responsible for running EJB beans
+MQ/messaging Container---->responsible for running messaging services.
+middleware services----->Additional services provided by servers.min of 8 services and max will be below 18.
+Exg: tx management,lifecycle mgmt,connection pooling....etc
+
+>>>CORBA---->EJB---->Spring---->Springboot----->?
+---------------------------------------->
+
+Data sources:
+-----------------
+Web sources: Fb/Twitter/youtube/....etc.
+Hardware sources: camera/Sensors/smart watches....etc
+
+destinations point:is location where we are going to persist data.
+Example: Cloud,Database like mysql/mongodb/maria db,Hadoop...etc
+we are dealing with data which is in petabytes.
+
+Source---->MQ--->Destination
+1layer--->2nd--->3rd  layer
+
+>>In mq-messaging queue terminology===>Source is called as Producer,destination is called as Consumer.
+MQ is a Queue datatructure/memory which will persist your data temporarly while data in transit.
+
+Example: Tata Sky,videoiocon disk...etc
+
+Tatasky-----producer
+srinivas--->consumer
+Dish/Antena--->Queue
+
+Note: MQ is not database.But any data which is available in queue can be persisted using persistant queue.Other wise use non persistant queue.
+
+I can  save data that was coming to Queue into database like mongodb/dynamodb..etc or AWS S3 Glacier.
+
+>>
+Lux soap/Mysore sandle,Santoor soap----integrients
+RIN Soap--integrients
+
+we need to have a specification which shld be followed by  vendors/companies.
+if a soap has X component--then i can say that can be used for Personal use
+if a soap has Y component--then i can say that can be used for washing clothes.
+>>Specification consists of set of rules/best practices and regulations to following while designing or implementing any product.
+====>Any product based company which wants to create MQ tool,thn they need to follow JMS Specification.
+IBM--->IBM Mq tool
+AWS---->AWS SNS/SQS service
+RabbitMQ
+Active MQ
+Apache kafka
+Apache Pulsar....etc
+jakarta messaging APi spec
+
+https://javaee.github.io/jms-spec/
+
+==========>
+https=>=http+TLS===>App layer
+TLS===> SSL certificates---->
+used for secure data transmission across network
+
+>A certificate consists of some security keys mainly used for protecting data taht travels across n/w.
+We need to purchase these certificates from vendors like Godaddy,versign,CA certs,paypal....etc
+https://www.sslshopper.com/
+
+Every certificate will have expiry time.Wen it expires,we need to renew.These certificates shld be placed in Servers.
+
+>certs will be maintained by DEVOPS engineers or  IT team in your organization.
+
+DEV server,Pre-prod server,Prod server.Certifcates are of  2types.
+1)Self signed---used for testing purpose only.---not secure
+2)Commercial certificates.---recommended---highly secured
+
+tcp===>Transport layer
+
+=>Streaming:continous flow of data from source to dstination.
+
+Srinivas---->his flight is at 11:25-boarding is done--flight about to start.Srinivas kept his mobile in airplane mode.
+At 11:28am,srinivas mother is trying to send msg.
+What will happen to message?
+
+Ans)till that time where you msg sits?
+in this case,it will be in queue but not in db.It used Dead-letter Queue.
+
+Queue are of 3 types in MQS.
+1)FIFO Queue
+2)Dead Letter Queue
+3)Negitive acknowledgement Queue
+
+S---------------------MQ server--------------------------
+
+Pulsar
+
+In mq servers,we are have rerty mechanism,if no of retrys are more than 3,then that message is elibile for pushing to dead letter Queue.
+
+No of retrys can be customizable.
+
+Dead letter queue creation shld be done by developer or admin.
+
+if destination receives msg successuly,it will receive acknowledgement.
+
+>> Encryption and decryption:
+
+encryption makes your data unreadable format,so that hackers cannt understand and modify data in middle.
+
+encryption and decryption is classified into 2 types.
+Symmetric and Assymetric
+>Symmetric means using same key for both encryptiona nd decryption.
+>Assymetric means using different keys for both encryptiona nd decryption.
+================================
+Encryption and encoding?wht is the difference?
+encryption---uses keys for encryption and decryption the msg
+encoding---use algorithms for encoding and decoding.
+Encoding is weak,so hacker can crack it easily.
+============================================================================
+
+Apache Pulsar
+-------------------
+>Apache version in training will be 3.x but no 2.x.
+s/w requirements:
+jdk17
+Google chrome
+Linux/Mac o/s
+text editor is available its enough
+Eclipse Nenon/Spring STS any version
+Mysql db or mongo db
+
+H/w:
+8Gb ram
+>atleast 8gb of hard disk
+
+Note: Pulsar is now available for windows.
+
+>>Pulsar can be installed in below ways.
+1)Using Docker--->recommended for Dev/pre-production  environments-->docker-compose feature is teh recommended.
+2)On Bare metal-->on laptop single node machine--->recommended for Training Purpose
+3)On AWS/Azure/GCP/IBM cloud----->recommended for production  environments
+4)On Kubernetes or openshift----->recommended for production  environments
+5)On cloud Instances like Ec2---->for testing/dev server
+
+======>IF you are ahving multiple sources and peta bytes of data transmitting from one point to another then use Pulsar/Kafka.
+
+For limited data ,use RabbitMQ/Active MQ servers.
+
+But pulsar is 2.5 times faster than kafka and provides good throughput and low latency.
+>When it comes to documentation part,kafka is best.pulsar documentation ans support from pulsar team is less.
+>pulsar had come up with connectors.
+
+db connectors/kafka connector/server connectors like netty.
+>
+We had installed Apache pulsar standalone on bare metal.
+Now i will show the same on AWS EC2 linux.
+------------------------------------------------
+Pulsar
+
+we are getting huge data from sensors--datasource or origin point---MQ--->push the data to database
+
+Asssume consumer crashed because of technical problem or natural calamity?the how do u deal with it?
+sol)MQ server
+
+Srinivas Laptop(India)------------------------>Harisith Laptop(US)
+
+Sceanario 1:
+
+Srinivas want to push database table data to Harisith laptop.
+srinivas can design a Springboot+hibernate  and then thru that app he can push data tpo harisith laptopwhat if Harisith Laptop is crashed?
+in this case if srinivas tries to push data to Harisith Laptop,data will fail.
+sol)Use MQ Servers as a mediators,which will have queues for storing your data temporarly till sonsumer is back.
+
+
+Apache Pulsar Architceture:
+===============================
+
+>To work on pulsar,we need to have a cluster.
+
+A cluster is group of machines/nodes/terminals/Brokers.
+cluster are of 2 types.
+consumer is also called as subscriber.
+1)Single node cluster (training and testing):a cluster with one node.
+2)Multi node cluster(production and dev environments)
+a cluster with 'n' no of  nodes.
+>Every broker has atleast one topic.Topic is aslso called as QUEUE.We can have as many topics based on broker config or available memory.
+>Consumers shld have info about topic name and broker name.
+This mechanism is called Queue architecture.
+In Queue architecture,we will have one producer and one consumer. thsis is 1-1 mechanism
+
+>Pub-subscriber or pub/sub architecture/models:
+publishers will push message and broadcast the message,so that multiple consumers can receive the data.
+
+Problems if broker crashes:
+1)data is lost.
+2)consumer will be waiting.That means you are unnecessarily wasting resources.
+
+11:30am
+11:45 amazon app is not working.Availability of data will be 24/7.
+
+if i say replication factor=23. we need to have 3 brokers.
+6,brokers shld be 6
+When we want to go with replication,replication factor is very important.Architects will descide this replica factor based on past experience and business.
+>
+For sensitive data or enterprize app,we go with AZ(available zones )replication.
+
+Asia-------Business----broker1
+Africa---south africa---broker2
+America------north ameriza----Virgina---broker3
+Europe
+Antartica
+
+above approach will increase infra cost.
+>broker means a server.Evry server will have metadata.
+serverid,Ip address,cluster ipaddress,portno,topicname,status of broker(ON/OFF)
+
+Node management shld happen.
+
+assume there are 3 brokers.
+broker1,broker2,broker3
+Note: cluster is mandetory for node management.
+For node management,pulsar uses Apache Zookeeper tool.Zookeper will maintain metadata about the nodes in cluster and its state.if any machine fails ,it gives signal(1/0) to pulsar saying this is down.
+
+>Zookeper(bully algo) will take the help of Pulsar and identifies one broker/node as master and remining as slaves.Otherwise,admin can identity one node as Master from Admin GUI screen.
+>Apache Zookeeper uses Election algorithm to elect master.zookeeper is a seperate server.
+
+Note: zookeeper will maintaing cluster metadata.
+
+3 lakhs nodes,then 1 zookeper cannot perform node management.Architect shld do proper calculation for 
+maintianing zookeeper servers.
+>>Topic are of 2 types.
+
+persistant and non persistant
+>>in non persistant queue,if consumer fails to consume data or if there is no ack,then msg will be deleted.
+>Every msg which we send from producer shld not exceed 5mb.
+
+In big data,if i get 25mb of data,then what will happen?
+ans)in this case, data will be splitted into chunks/data packets.
+
+Where do messages stored in Pulsar?
+ans)it shld be in queue,but in pulsar it is different.It stores in different layer for which we use bookkeeper.
+>Data will be persisted in bookkeeper.
+>Generally in pulsar topic,we will have keys and values only.
+
+Bookkeeepr is a server where data is stored in the form of ledgers.ledger is again a log file.
+
+Topic--->Boookeeper----->ledgers---->fragments----->Entries-key and value
+
+Finally entry is a location where your mesages are stored.
+
+>In cloud,entire US is splitted into zones.Zones like US EAST,US WESt,US-EAST2
+>Datacenters or servers are pyhsically maintained at that location.
+
+case2: Asume server is in mumbai with out replication?
+if sunami hits mumbai,what will happen to seerver. 
+
+
+Abc is a company having business in Singapore,India and Hongkong.Now tell me wheter will u maintain servers?
+ans)india,hongkong and singapore
+
+every country will have IT security policy and DAta security laws.
+
+Srini i can i  have replicate data in afganistan?
+ans) no customers in afganistan
+2)always check countrys data security laws.if it is not strong,dont store data there.
+3)If server is ina coubtry where natural calamilities occues more frequently,then dont go with that zone.
+
+best solution is cloud.
+
+Dead letter Queue
+Negative acknowledgement queue
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
