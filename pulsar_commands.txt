@@ -1,0 +1,67 @@
+Apache Pulsar
+==============
+https://pulsar.apache.org/docs/next/getting-started-standalone/
+
+>Create a tenant
+pulsar-admin tenants create demo
+
+>List tenants
+bin/pulsar-admin tenants list
+
+>Create the namespace.
+bin/pulsar-admin namespaces create apache/pulsar
+
+>Create a partitioned-topic for a specific tenant and namespace.
+$ pulsar-admin topics create-partitioned-topic persistent://my-tenant/my-namespace/cheat_sheet_topic --partition
+
+>Create a persistent topic
+bin/pulsar-admin topics create "persistent://public/default/a-new-topic"
+
+>Create a non-persistent topic
+bin/pulsar-admin topics create "non-persistent://public/default/a-new-topic"
+
+>List partioned Topics
+$ pulsar-admin topics list-partitioned-topics public/default
+
+>Display all topics
+pulsar-admin topics list public/default
+
+>Get status about a topic
+$ pulsar-admin topics stats persistent://public/default/cheat_sheet_topic
+
+>Forcefully delete a topic (close all producers/consumers/replicators & delete schemas)
+bin/pulsar-admin topics delete -f -d "persistent://public/default/a-new-topic"
+
+>Verify the namespace.
+bin/pulsar-admin namespaces list "public"
+
+>Create test-topic with 4 partitions in the namespace apache/pulsar.
+bin/pulsar-admin topics create-partitioned-topic apache/pulsar/test-topic -p 4
+
+>List all the partitioned topics in the namespace apache/pulsar.
+bin/pulsar-admin topics list-partitioned-topics apache/pulsar
+
+>Create a subscription to consume messages from apache/pulsar/test-topic.
+bin/pulsar-client consume -s sub apache/pulsar/test-topic  -n 0
+
+>Pushing some messages
+In a new terminal, create a producer and send 10 messages to test-topic.
+bin/pulsar-client produce apache/pulsar/test-topic  -m "---------hello apa
+
+>Broker info and health.
+pulsar-admin brokers subcommand
+
+
+Subcommands
+
+list
+namespaces
+update-dynamic-config
+list-dynamic-config
+get-all-dynamic-config
+get-internal-config
+get-runtime-config
+healthcheck
+>Find leader broker
+
+$ pulsar-admin brokers leader-broker
