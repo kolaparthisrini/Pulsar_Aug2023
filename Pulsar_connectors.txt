@@ -1,0 +1,44 @@
+List of Pulsar Connectors
+=============
+https://archive.apache.org/dist/pulsar/pulsar-3.0.0/connectors/
+SourceConnector:
+
+>Canal
+>Debezium MySQL
+>Debezium PostgreSQL
+>Debezium Mongo
+>Debezium Microsoft Sql Server
+>DynamoDB
+>File
+>Flume
+>Kineses
+>MongoDb
+>Netty
+>Twitter Firehouse
+>NSQ
+>Rabbit MQ
+
+Sink Connectors:
+=============
+>Aerospike
+>Alluxio
+>Cassandra
+>ElasticSearch
+>Flume
+>HBase
+>HDFS2
+>HDFS3
+>HTTP
+>InfluxDB
+>JDBC ClickHouse
+>JDBC MariaDB
+>JDBC OpenMLDB
+>JDBC PostgreSQL
+>JDBC SQLite
+>kafka
+>JDBC OpenMLDB
+>Redis
+>Solr
+>MongoDB
+>RabbitMQ
+>Kineses
