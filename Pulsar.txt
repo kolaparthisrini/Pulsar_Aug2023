@@ -288,6 +288,328 @@ best solution is cloud.
 Dead letter Queue
 Negative acknowledgement queue
 
+======
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.pulsar</groupId>
+        <artifactId>spring-pulsar-spring-boot-starter</artifactId>
+        <version>0.2.1-SNAPSHOT</version>
+    </dependency>
+</dependencies>
+
+>>{type}://{tenant}/{namespace}/{topic}
+https://github.com/apache/pulsar/blob/master/pulsar-client/pom.xml
+=====================================
+Day 2-Aug 4th
+=============
+Topic--->Ledger--->Fragment--->entry
+>Proxy works at security layer.
+>proxy is responsible for making your brokers visible to outside world.
+>Everybody cannot access broker directly.Only authorized users will have access to brokers.Only admin can grant permissions.
+
+>>>>>>>>>>>>Security--Authentication
+1)Http Authentication-----low security
+2)JSON web tokens/Oauth1.0/Oauth2.0 auth---tight security
+3)Kerberos
+4)SAML Authentication---recommended if you want tight security.better than JSON tokens.Cost of infra is very high.
+
+>Zookeeper performs node management and maintains cluster metadata.
+
+>>>>>>Note: if we work on single node cluster,no need of zookeeper.
+Producer p1 is a new channel company,which publishes news across India and US.
+
+p1 is pushing message in XML format.But consumer knows only JSON.--Then there isa challenge for accepting and publishing messages to end user.
+
+>>XML---heavy weight .Consumers can access news through mobile app,Desktop web,tablets or kiosk machine.
+
+If producer sends huge xml data to consumer,can a mobile can undertsnad that huge xml data.?
+Ans)No.Mobile cannot understand huge xml data.Mobile is light weight component.Then we need t transform xml to json format.JSON is light weight than xml.Now a days we can use BSON.
+
+xml--->JSON--->BSON
+
+--->Pulsar says both parties shld agree to common schema.APache pulsar schema format.
+Avro or protobuf---commonly used schema formats.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+We can write code for interacting with pulsar using client libraries.
+Officially maintained Pulsar Clients for Java, Go, Python, C++, Node.js, and C#.
+
+=======>Rules to remember while subscribing for Topic====
+1)In pulsar,when we want to consume the message,make sure proper subscription model is selected.
+If not pulsar will not work as per expectations.
+2)Pulsar had come up with subscription model.Any subscriber shlb follow the subscribtion model rules.
+3)when we work on pulsar client libraries like java/python,make sure we are clear about subscription model,Otherwise code will fail.
+
+>>Topic compaction:
+---------------------
+>old messages which were not acknowledged will be removed from topics;if we perform topic compaction,otherwise memory shortage might arise in topic.
+>only admin can perform these operations.
+>time constraint shld identified by either customer or architect based on past experiance or best practices.
+
+>>In pulsar,we do have another topic called as "negitive ack queue".
+>>In this queue,we have messages which were not acknowledge from consumer.
+>>only admin can create this type of negitive ack queues on brokers.
+
+======>For MQ servers,below are the Job roles:
+Cloud/on-premises:
+MQ Developer---coding as per business requirements
+MQ Admin--certification is mandetorys
+MQ Report analyst----pulsar basics,reporting and power-bi/Qlikview tools
+
+>Apache pulsar bookkeeper uses a database internally.name of the database is "Rockdb".It is like mongodb.
+--------->
+In apache pulsar,the server configuration files are vailable under "conf" folder.
+
+brokerServicePort=6650
+webServicePort=8080
+
+bind address = 0.0.0.0 that means it is called as loop back address or local machine
+>by default TLS is disabled.For tls we use 8443 port no.
+
+Quetion: I want to push a message to a topic named as "Srini",But topic is not available in cluster.
+What will happen?
+ans)pulsar will chck allowAutoTopicCreation is set to true or false.IF topic is not available and allowAutoTopicCreation is false then it will throw error msg.
+
+or
+IF topic is not available and allowAutoTopicCreation is true then it will create new topic.
+
+Note: In realtime,we will diable autosubscription feature,for better security.
+
+=============>
+Sceanario 3:
+Srinivas, had topic with name "A" and "B".A topic is used most frequently and B is not used from last 4  months.
+
+what we need to do?
+do we need to keep that topic like that or delete it or make it inactive.
+2nd: I want to delete all inactive topics,because i am not going to use infuture also,then what i need to do?
+
+if brokerDeleteInactiveTopicsEnabled=true then all inactive topics will be autodeleted by pulsar.
+
+>>>>>>When broker knows wen to remove inactive topics?
+ans)brokerDeleteInactiveTopicsFrequencySeconds=600000
+
+>>>Where to place SSL certifcate in Apache pulsar?
+ans)"tlsCertificateFilePath"
+
+tlsCertificateFilePath="D:\Materials\pulsar\apache-pulsar-3.0.0-bin\apache-pulsar-3.0.0\conf"
+
+---------------------------------------------->
+>>In pulsar ,if we want to represent a specific topic programatically,then we need to follow below syntax:
+{type}://{tenant}/{namespace}/{topic}
+persistent://public/default/a-new-topic
+
+type means public or private,persitent,non-persistent
+namespace: it is like package in java.In pulsar,namespace are used to group topics.
+tenat: single/Multi-tenant
+
+In cloud,memory is costly.We shld utilize the memory carefully.
+In cloud memory cost will be based on mainly 1 parameter.
+1)if we want entire memory to be allocated to one user then cost willl be very high.----independent house
+2)if we want entire memory to be allocated to more than one  user then cost willl be low.---Apartment
+
+Single tenant means it is like independdent house with land
+Multi-tenant means it is like apartment.
+
+Note: By default Apache pulsar is multi-tenant.Always topics shld be under a namespace.
+
+>>we are going to design simple java programs.
+=====================>
+>>RESTful services in Apache pulsar:
+========================================
+>if we want to access pulsar cluster,we can access even through RESTful services.
+>In rest we will have Endpoints.
+
+If we want to fetch any info or any operation on cluster,we can do it using below ways:
+1)using admin commands---done
+2)Using java/python code
+3)Thru Admin console--GUI---not done,because this feature is available only for kubernetes.
+4)using restful services---done
+
+https://pulsar.apache.org/admin-rest-api/?version=3.0.0#operation/BrokerStats_getTopics2
+
+Note: If ssl certificate is not configured at broker side,then https protocl will not work for restful services.
+===============
+
+Interacting with Apache Pulsar using Java Client Library:
+=============================================================
+https://pulsar.apache.org/docs/3.0.x/client-libraries-java/
+
+>Usining java libraries we can create producer,consumer,topics and admin tasks using java code.
+>
+1)create pulsar client obj;
+PulsarClient pulsarClient = PulsarClient.builder().serviceUrl(pulsarBrokerRootUrl).build();
+2)Create a producer object using pulsarclient reference.
+Producer<byte[]> producer = pulsarClient.newProducer();
+3)Configure topic information in producer.
+topic(topic)
+   .messageRoutingMode(MessageRoutingMode.SinglePartition)
+4)send the message to apache pulsar using producer obj.
+send()
+
+https://pulsar.apache.org/api/client/3.0.x/org/apache/pulsar/client/api/Message.html
+
+Consumer: pulsar had came up with Consumer class for creating consumer object.
+==========
+ Consumer consumer1 = client.newConsumer()
+        .topic("my-topic")
+        .subscriptionName("my-subscription")
+        .subscriptionType(SubscriptionType.Failover)
+        .subscribe()
+
+<dependency>
+  <groupId>org.apache.pulsar</groupId>
+  <artifactId>pulsar-client</artifactId>
+  <version>3.0.0</version>
+</dependency>
+
+ PulsarClient client = PulsarClient.builder()
+                              .serviceUrl("pulsar://56.67.88.9:6650,pulsar://56.67.88.9:6651")
+                              .build();
+
+while (true) {
+
+  Message msg = consumer.receive();
+
+  try {
+     
+      System.out.println("Message received: " + new String(msg.getData()));
+     consumer.acknowledge(msg);
+  } catch (Exception e) {
+      
+      consumer.negativeAcknowledge(msg);
+  }
+}
+
+Assume there is a microservices with name "A" and "Service with name "B".
+Now A service wants to communicxate with B service.In theis case,we can use MQ pulsar.
+One service can act as producer and another service can act as consumer.
+
+One microservice can communicate with another using below ways:
+1)Using MQ servers---recommended
+2)REST API
+3)RPC calls
+4)gRPC calls
+5)Socket programming
+>When we deal with composite microservices,then above ways are mandetory.
+
+composite microservices: group of services is called as composite.In composite one service output is input to another service.
+
+Example: Google maps
+
+
+Springboot support for MQ servers:
+---------------------------------------
+>>Springboot support is not provided by default.
+>>from 2022,few developers created api for Spring boot Apache Pulsar.
+===>
+>"PulsarTemplate" for quickly publishing to Pulsar topics using one-liner send methods.
+>Provide a "PulsarListener" annotation to write high-level Pulsar consumers.
+>"MessageListenerContainer" infrastructure to support PulsarListener.
+>Both record and "batch-based PulsarListener" consumption.
+
+i recommend u to use java client libraries for the same.
+
+Pulsar Connectors:
+=======================
+>>>pulsar had given plug n play connectors.
+A connector is a ready made components which is used for transfering data from Source to desitination usinh apache pulsar as a mediator.
+
+Exampl 1: there is a folder d:/ with 3000 files which are in srinivas system.He wants to transfer that file in secure manner to Yash laptop.
+
+As soon i place my file in d drive it shld start transfering without manual invilvement.
+
+Note: we will see similar types of connectors in Mulesoft/Apache camel and SAP.
+
+Note: To test connectors,we need to have docker installed in your system. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
